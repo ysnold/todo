@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>TODOS</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+
+        <!--font awesome link-->
+        <script src="https://kit.fontawesome.com/07bcbc4adc.js" crossorigin="anonymous"></script>
+        <!-- chart js link -->
+        
+    </head>
+    <body>
+    <main id="app">
+         <!-- Partie connexion --> 
+          <div v-if="!isConnected">
+            <h1 class="text-center bg-danger"><span class="text-light">TODO</span> <span class="text-light">LIST</span> <span class="align-text-top text-dark fs-3">.V2</span></h1>
+            <br>
+            <h1 class="text-center">LOG <span class="text-danger">IN</span></h1>
+            <br>
+            <div class="container col-9">
+              <input v-model="user" type="text" class="form-control bg-light" placeholder="Username" aria-label="Username" aria-describedby="addon-wrapping">
+              <br>
+              <input v-model="pass" type="password" class="form-control bg-light" placeholder="Password" aria-label="Username" aria-describedby="addon-wrapping">
+              <br>
+              <button class="btn btn-danger" @click="connect()">CONNECT</button>
+            </div>
+          </div>
+
+         <!-- Partie app-->
+         <div v-else="isConnected">
+        <!-- Partie Navbar-->
+         <div class="mb-2">
+          <div class="container-fluid">
+              <nav class="navbar navbar-expand-lg bg-body-tertiary p-0 mb-2">
+                <div class="container-fluid bg-light">
+                  <a class="navbar-brand" href="#"><h1 class="text-center "><span class="text-dark">TODO</span> <span class="text-dark">LIST</span> <span class="align-text-top text-danger fs-3">.V2</span></h1></a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0 shadow-sm p-3 mb-5 bg-body-tertiary rounded">
+                      <li class="nav-item">
+                        <button class="nav-link  fs-5 btn btn-outline-danger" aria-current="page" @click="inHomef()" href="home">HOME</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link fs-5 btn btn-outline-danger"  @click="inTablef()">TABLES</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link fs-5 btn btn-outline-danger" @click="inGraphicsf()">GRAPHS</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link fs-5 btn btn-outline-danger" @click="inStatusf()">STATUS</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link fs-5 btn btn-outline-danger " @click="disconnected()">LOG OUT</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="btn btn-outline-danger" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions"><i class="fa-solid fa-list-check"></i></button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </nav>
+          </div>
+         </div>
+  
+          <div v-show="inHome">
+            <!--off canvas button-->
+                        <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+                          <div class="offcanvas-header">
+                            <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">Everything You Need</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                          </div>
+                          <div class="offcanvas-body">
+                            <!--partie add-->
+            <!-- Button add modal -->
+            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+                <br>
+                <br>
+                <!--partie search-->
+                <!-- Button search modal -->
+                       <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-dismiss="offcanvasScrolling" data-bs-target="#staticBackdrop1">
+                           <i class="fa-solid fa-search"></i>
+                        </button>
+                               
+                            <br>
+                            <br>
+                            <!--trash and upload buttons-->
+                            <button type="submit" class="btn btn-success " @click="del()"><i class="fa-solid fa-trash"></i></button> 
+                            <br>
+                            <br>
+                        <button type="submit" class="btn btn-dark " @click="uploadlist()"><i class="fa-solid fa-upload"></i></i></button> 
+
+                          </div>
+                        </div>
+
+            <!-- add Modal -->
+            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">Add List</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input v-model="item.id" type="text" class="form-control bg-light" placeholder="ID"  aria-describedby="addon-wrapping">
+                            <span class="input-group-text" id="inputGroup-sizing-default"> <button type="submit" class="btn btn-outline-secondary " @click="del1()"><i class="fa-solid fa-trash"></i></button> <span></span></span>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input v-model="item.des" type="text" class="form-control " placeholder="DESCRIPTION"  aria-describedby="addon-wrapping" >
+                            <span class="input-group-text" id="inputGroup-sizing-default"><button type="submit" class="btn btn-outline-primary " @click="del2()"><i class="fa-solid fa-trash"></i></button> <span></span></span>
+                        </div>
+                        <select class="form-select" aria-label="Default select example" v-model="item.status">
+                            <option selected value="WAITING">WAITING</option>
+                            <option value="IN PROGRESS">IN PROGRESS</option>
+                            <option value="DONE">DONE</option>
+                            <option value="CANCELED">CANCELED</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary " @click="add()">Add</button> 
+                    </div>
+                    </div>
+                </div>
+                </div>
+                 <!--search Modal -->
+                 <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="staticBackdrop1Label">Search</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <div class="input-group flex-nowrap">
+                                    <input v-model="searchId" type="text" class="form-control bg-light" placeholder="Search Id" aria-label="Username" aria-describedby="addon-wrapping">
+                                    <button type="submit"  class="btn btn-danger" @click="idFilter(searchId)"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>
+                            </div>
+                                <br>
+                                <div class="container">
+                                <div class="input-group flex-nowrap">
+                                    <input v-model="searchdes" type="text" class="form-control bg-light" placeholder="Search Description" aria-label="Username" aria-describedby="addon-wrapping">
+                                    <button type="submit"  class="btn btn-danger" @click="desFilter(searchdes)"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>  
+                                </div>
+                                <br>
+                                <div class="container">
+                                <div class="input-group flex-nowrap">
+                                    <input v-model="searchcat" type="text" class="form-control bg-light" placeholder="Search Categorie" aria-label="Username" aria-describedby="addon-wrapping">
+                                    <button type="submit"  class="btn btn-danger" @click="catFilter(searchcat)"><i class="fa-solid fa-magnifying-glass"></i></button>
+                                </div>  
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+         </div>
+            <!-- partie stats -->
+            <div v-show="inStatus">
+                <div class="row row-cols-5">
+                    <div class="col">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded border border-4">
+                    <div class="card-body bg-light">
+                        <h5 class="card-title">TOTAL</h5>
+                        <p class="card-text fs-4"> {{ list.length }} </p>
+                    </div>
+                    </div>
+                </div>
+                    <div class="col">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded border border-4">
+                    <div class="card-body bg-light">
+                    <h5 class="card-title">WAITING</h5>
+                    <p class="card-text fs-4"> {{waiting}} </p>
+                    </div>
+                </div>
+            </div>
+                    <div class="col">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded border border-4">
+                    <div class="card-body bg-light">
+                    <h5 class="card-title">IN PROGRESS</h5>
+                    <p class="card-text fs-4"> {{inprogress}} </p>
+                    </div>
+                </div>
+            </div>
+                    <div class="col">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded border border-4">
+                    <div class="card-body bg-light">
+                    <h5 class="card-title">DONE</h5>
+                    <p class="card-text fs-4"> {{done}} </p>
+                    </div>
+                </div>
+            </div>
+                    <div class="col">
+                    <div class="card shadow p-3 mb-5 bg-body-tertiary rounded border border-4">
+                    <div class="card-body bg-light">
+                    <h5 class="card-title">CANCELED</h5>
+                    <p class="card-text fs-4"> {{canceled}} </p>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+            <!--partie table -->
+          <div v-show="inTable">
+            <p v-if="!list.length" class="fs-5 shadow-sm p-3 mb-5 bg-body-tertiary rounded fs-4"><span class="container text-danger fs-4">NO</span> <span class="text-dark">ADDED LISTS</span></p>            
+            <table class="table container" v-else="list.length">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>DESCRIPTION</th>
+                  <th>CATEGORIE</th>
+                  <th>EDIT</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="ite in list">
+                  <td> {{ite.id}} </td>
+                  <td> {{ite.des}} </td>
+                  <td> {{ite.status}} </td>
+                  <td><button  class="btn btn-outline-info m-1" @click="delitem(ite.id)"><i class="fa-solid fa-trash"></i></button>
+                      <button class="btn btn-outline-danger m-1" @click="showitem(ite)"><i class="fa-solid fa-eye"></i></button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+    </main>
+ 
+
+
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script> 
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+        
+            const { createApp, ref,computed } = Vue
+          
+            createApp({
+              setup() {
+                    const item = ref({'id':'','des':'' ,'status':'0' ,})
+                    const list = ref([])
+                    const searchId = ref('')
+                    const searchdes = ref('')
+                    const searchcat = ref('')
+                    const user = ref('')
+                    const pass = ref('')
+                    const username = 'admin'
+                    const password = 'admin'
+                    const isConnected = ref(false)
+                    const inHome = ref(true)
+                    const inTable = ref(true)
+                    const inGraphics = ref(true)
+                    const inStatus = ref(true)
+                    function disconnected() {
+                      isConnected.value = !isConnected.value
+                    }
+                    function connect() {
+                      if (user.value==username && pass.value==password) {
+                        isConnected.value = true
+                        Swal.fire({
+                            title: '',
+                            text: 'CONNECTED SUCCESSFULLY',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                      }
+                      else {
+                        isConnected.value = false
+                        Swal.fire({
+                            title: '',
+                            text: 'USERNAME OR PASSWORD IS INCORRECT',
+                            icon: 'error',
+                            confirmButtonText: 'OK'
+                        })
+                      }
+
+                    }
+                    
+                    function add() {
+                        list.value.push(item.value)
+                        item.value = {'id':'','des':'' ,'status':''}
+                        Swal.fire({
+                            title: '',
+                            text: 'ADDED SUCCESSFULLY',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                    }
+                    function del(){
+                        list.value=[]
+                        Swal.fire({
+                            title: '',
+                            text: ' DELETED SUCCESSFULLY',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                    }
+                    function del1(){
+                        item.value.id = ''
+                    }
+                    function del2(){
+                        item.value.des = ''
+                    }
+                    function delitem(id){
+                        list.value=list.value.filter((row )=>row.id!==id )
+                        Swal.fire({
+                            title: '',
+                            text: 'DELETED SUCCESSFULLY',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                    }
+                    function showitem(ite){
+                        item.value.id=ite.id 
+                        item.value.des=ite.des
+                        item.value.status=ite.status
+                    } 
+                    function uploadlist(){
+                        list.value=[
+                        {'id':'1','des':'Learn python','status':'WAITING'},
+                        {'id':'2','des':'Learn Java','status':'IN PROGRESS'},
+                        {'id':'3','des':'Learn arabic','status':'DONE'},
+                        {'id':'4','des':'Learn english','status':'CANCELED'},
+                        ]
+                        Swal.fire({
+                            title: '',
+                            text: 'ADDED SUCCESSFULLY',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        })
+                    }
+                    function idFilter (id){ 
+                            list.value = list.value.filter((item)=> item.id == id)
+                    }
+                    function desFilter (des){
+                            list.value = list.value.filter((item)=> item.des == des)
+                    }
+                    function catFilter (status){
+                            list.value = list.value.filter((item)=>item.status == status )
+                    }
+                    const waiting = computed(()=>{
+                    return list.value.filter((row )=>row.status=="WAITING" ).length
+                    })
+                    const inprogress = computed(()=>{
+                    return list.value.filter((row )=>row.status=="IN PROGRESS" ).length
+                    })
+                    const done = computed(()=>{
+                    return list.value.filter((row )=>row.status=="DONE" ).length
+                    })
+                    const canceled = computed(()=>{
+                    return list.value.filter((row )=>row.status=="CANCELED" ).length
+                    })
+                    function inHomef(){
+                      inHome.value = true
+                      inTable.value = true
+                      inGraphics.value = true
+                      inStatus.value = true
+                    }
+                    function inTablef(){
+                      inHome.value = false
+                      inTable.value = true
+                      inGraphics.value = false
+                      inStatus.value = false
+                    }
+                    function inGraphicsf(){
+                      inHome.value = false
+                      inTable.value = false
+                      inGraphics.value = true
+                      inStatus.value = false
+                    }
+                    function inStatusf(){
+                      inHome.value = false
+                      inTable.value = false
+                      inGraphics.value = false
+                      inStatus.value = true
+                    }
+                    
+                    return {
+                    item ,
+                    add ,
+                    del,
+                    list ,
+                    del1 ,
+                    del2 ,
+                    delitem ,
+                    showitem ,
+                    uploadlist ,
+                    waiting ,
+                    inprogress ,
+                    done ,
+                    canceled ,
+                    searchId ,
+                    idFilter ,
+                    searchdes ,
+                    desFilter ,
+                    searchcat ,
+                    catFilter ,
+                    username ,
+                    password ,
+                    user ,
+                    pass ,
+                    connect ,
+                    isConnected ,
+                    disconnected ,
+                    inHome,
+                    inGraphics,
+                    inTable,
+                    inHomef,
+                    inGraphicsf,
+                    inTablef,
+                    inStatus,
+                    inStatusf,
+                    }
+              }
+            }).mount('#app')
+          </script>
+    </body>
+</html>
